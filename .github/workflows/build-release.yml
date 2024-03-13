@@ -3,7 +3,7 @@ name: Build Release
 on:
   push:
     tags:
-      - 'v*'
+      - '*'
 
 jobs:
   build:
@@ -16,8 +16,24 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v1
 
-      - name: Build Debian package
+      - name: Build Debian Package
         run: dpkg-deb --build nopasswd
+
+      - name: Verify Package Version
+        run: |
+          version=$(dpkg-deb --field nopasswd.deb Version)
+          tag_version=$(echo "${{ github.ref }}" | cut -d '/' -f 3)
+          if [ "$version" != "$tag_version" ]; then
+            echo "Error: Package version ($version) does not match tag version ($tag_version)"
+            exit 1
+          fi
+
+      - name: Rename Debian Package
+        run: dpkg-name nopasswd.deb
+
+      - name: Determine Renamed Package Name
+        id: extract_filename
+        run: echo "::set-output name=filename::$(find nopasswd_*)"
 
       - name: Create Release
         id: create_release
@@ -37,6 +53,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: nopasswd.deb
-          asset_name: nopasswd.deb
+          asset_path: ${{ steps.extract_filename.outputs.filename }}
+          asset_name: ${{ steps.extract_filename.outputs.filename }}
           asset_content_type: application/octet-stream

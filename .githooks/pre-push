@@ -1,0 +1,22 @@
+#!/bin/bash
+
+remote="$1"
+url="$2"
+
+# Check if the push includes tags
+if [[ "$url" == *"refs/tags"* ]]; then
+    # Extract the tag being pushed
+    tag=$(git rev-parse --abbrev-ref HEAD)
+
+    # Extract the version from the tag
+    tag_version=$(echo "$tag" | cut -d '/' -f 3)
+
+    # Extract the version from the control file
+    control_version=$(grep -oP 'Version: \K(.+)' path/to/your/control/file)
+
+    # Compare the versions
+    if [ "$tag_version" != "$control_version" ]; then
+        echo "Error: Version in tag ($tag_version) does not match version in control file ($control_version)"
+        exit 1
+    fi
+fi

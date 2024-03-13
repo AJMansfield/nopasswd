@@ -24,3 +24,8 @@ jobs:
         id: extract_filename
         run: echo "::set-output name=filename::$(find nopasswd_*)"
 
+      - name: Upload Built Package as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.extract_filename.outputs.filename }}
+          path: ${{ steps.extract_filename.outputs.filename }}

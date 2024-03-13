@@ -1,22 +1,22 @@
 #!/bin/bash
 
+set -x
+
 remote="$1"
 url="$2"
 
-# Check if the push includes tags
-if [[ "$url" == *"refs/tags"* ]]; then
-    # Extract the tag being pushed
-    tag=$(git rev-parse --abbrev-ref HEAD)
+z40=0000000000000000000000000000000000000000
 
-    # Extract the version from the tag
-    tag_version=$(echo "$tag" | cut -d '/' -f 3)
-
-    # Extract the version from the control file
-    control_version=$(grep -oP 'Version: \K(.+)' path/to/your/control/file)
-
-    # Compare the versions
-    if [ "$tag_version" != "$control_version" ]; then
-        echo "Error: Version in tag ($tag_version) does not match version in control file ($control_version)"
-        exit 1
+IFS=' '
+while read local_ref local_sha remote_ref remote_sha
+do
+  if [[ $local_ref == "refs/tags/v"* ]]; then
+    control_version=$(grep -oP 'Version: \K(.+)' nopasswd/DEBIAN/control)
+    if [[ ! $local_ref == "refs/tags/v${control_version}" ]]; then
+      echo "Version tag $local_ref does not match control version $control_version, rejecting tag." >&2;
     fi
-fi
+    exit 1
+  fi
+done
+
+exit 0

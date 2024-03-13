@@ -3,7 +3,7 @@ name: Build Release
 on:
   push:
     tags:
-      - '*'
+      - 'v*'
 
 jobs:
   build:
@@ -21,6 +21,7 @@ jobs:
         run: |
           version=$(dpkg-deb --field nopasswd.deb Version)
           tag_version=$(echo "${{ github.ref }}" | cut -d '/' -f 3)
+          tag_version=${tag_version#v}
           if [ "$version" != "$tag_version" ]; then
             echo "Error: Package version ($version) does not match tag version ($tag_version)"
             exit 1

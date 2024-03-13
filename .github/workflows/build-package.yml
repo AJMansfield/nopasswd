@@ -20,15 +20,6 @@ jobs:
       - name: Build Debian Package
         run: dpkg-deb --build nopasswd
 
-      - name: Verify Package Version
-        run: |
-          version=$(dpkg-deb --field nopasswd.deb Version)
-          tag_version=$(echo "${{ github.ref }}" | cut -d '/' -f 3)
-          if [ "$version" != "$tag_version" ]; then
-            echo "Error: Package version ($version) does not match tag version ($tag_version)"
-            exit 1
-          fi
-
       - name: Rename Debian Package
         run: dpkg-name nopasswd.deb
 

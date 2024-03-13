@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -x
 
 remote="$1"
 url="$2"

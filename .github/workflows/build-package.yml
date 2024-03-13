@@ -19,23 +19,23 @@ jobs:
       - name: Build Debian Package
         run: dpkg-deb --root-owner-group --build nopasswd
 
+      - name: Rename Package
+        run: dpkg-name nopasswd.deb
+
+      - name: Determine Filename
+        id: extract_filename
+        run: echo "::set-output name=filename::$(find nopasswd_*)"
+
       - name: Verify Version
         if: startsWith(github.ref, 'refs/tags/v')
         id: check_version
         run: |
-          version=$(dpkg-deb --field nopasswd.deb Version)
-          if [[ ! "${{ github.ref }}" == "ref/tag/v${version}" ]]; then
-            echo "Error: Package version ($version) does not match tag version ($tag_version)"
+          version=$(dpkg-deb --field ${{ steps.extract_filename.outputs.filename }} Version)
+          if [[ ! "${{ github.ref }}" == "refs/tags/v${version}" ]]; then
+            echo "Error: Version tag ${{ github.ref }} does not match control version ${version}, cancelling release." >&2;
             exit 1
           fi
           echo "::set-output name=version::$version"
-
-      - name: Rename Package
-        run: dpkg-name nopasswd.deb
-
-      - name: Determine Package Name
-        id: extract_filename
-        run: echo "::set-output name=filename::$(find nopasswd_*)"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4

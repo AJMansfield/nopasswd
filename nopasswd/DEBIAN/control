@@ -1,0 +1,8 @@
+Package: nopasswd
+Version: 0.1.0
+Maintainer: Anson Mansfield <anson.mansfield@gmail.com>
+Architecture: all
+Description: Creates a nopasswd group that can run sudo without entering their password.
+Section: admin
+Priority: extra
+Depends: sudo

@@ -17,6 +17,7 @@ jobs:
         run: dpkg-deb --build nopasswd
 
       - name: Verify Package Version
+        id: check_version
         run: |
           version=$(dpkg-deb --field nopasswd.deb Version)
           tag_version=$(echo "${{ github.ref }}" | cut -d '/' -f 3)
@@ -24,6 +25,7 @@ jobs:
             echo "Error: Package version ($version) does not match tag version ($tag_version)"
             exit 1
           fi
+          echo "::set-output name=version::$version"
 
       - name: Rename Debian Package
         run: dpkg-name nopasswd.deb
@@ -39,12 +41,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          release_name: Release ${{ steps.check_version.outputs.version }}
           draft: true
           prerelease: false
 
       - name: Upload Release Asset
-        id: upload-release-asset
+        id: upload_release_asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

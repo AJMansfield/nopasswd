@@ -2,9 +2,7 @@
 
 set -e
 
-# Get group name
-source "$(dirname "$0")/config.sh"
-
+GROUP_NAME="nopasswd"
 INSTALLING_USER="$SUDO_USER"
 
 # Create the user group

@@ -2,8 +2,7 @@
 
 set -e
 
-# Source config.sh to get the GROUP_NAME variable
-source "$(dirname "$0")/config.sh"
+GROUP_NAME="nopasswd"
 
 # Remove the user group on uninstall
 delgroup "$GROUP_NAME" || true

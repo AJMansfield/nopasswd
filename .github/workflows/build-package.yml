@@ -1,0 +1,17 @@
+name: Build Debian Package
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build Debian package
+        run: dpkg-deb --build nopasswd

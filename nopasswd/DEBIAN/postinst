@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -e
+
+# Get group name
+source "$(dirname "$0")/config.sh"
+
+INSTALLING_USER="$SUDO_USER"
+
+# Create the user group
+addgroup --system "$GROUP_NAME" || true
+
+# Check if there even is an installing user it would make sense to add to the group, and skip asking if not.
+if id "$INSTALLING_USER" >/dev/null 2>&1; then
+
+  # Prompt for whether to add the installing user.
+  read -p "Add '$INSTALLING_USER' to '$GROUP_NAME' group? [Y/n]: " response
+
+  # Convert response to lowercase
+  response=${response,,}
+
+  # Add installing user to the group
+  if [[ $response =~ ^(yes|y| ) ]]; then
+    adduser "$INSTALLING_USER" "$GROUP_NAME" || true
+  fi
+fi
+
+# Set permissions bits
+chmod u=r,go=r /etc/sudoers.d/nopasswd
+
+exit 0

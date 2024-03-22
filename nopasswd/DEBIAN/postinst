@@ -12,7 +12,8 @@ addgroup --system "$GROUP_NAME" || true
 if id "$INSTALLING_USER" >/dev/null 2>&1; then
 
   # Prompt for whether to add the installing user.
-  read -p "Add '$INSTALLING_USER' to '$GROUP_NAME' group? [Y/n]: " response
+  # read -p "Add '$INSTALLING_USER' to '$GROUP_NAME' group? [Y/n]: " response
+  response=yes
 
   # Convert response to lowercase
   response=${response,,}
